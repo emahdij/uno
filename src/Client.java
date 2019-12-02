@@ -71,24 +71,26 @@ public class Client {
         System.out.print("Plese enter server name:");
         nameserver = scanner.nextLine();
         boolean sw = true;
-        System.out.println("nameserver: " + nameserver);
         while (sw) {
             for (int i = 0; i < serverArrayList.size(); i++) {
                 if (serverArrayList.get(i).getServername().equalsIgnoreCase(nameserver)) {
                     socket = new Socket(serverArrayList.get(i).getIp(), 4778);
                     OutputStream outstream = socket.getOutputStream();
                     PrintWriter out = new PrintWriter(outstream);
-                    System.out.println("Plese enter you username name:");
+                    System.out.print("Plese enter you username name:");
                     this.username = scanner.nextLine();
                     out.println(this.username);
                     out.flush();
                     sw = false;
                 }
             }
-            if (socket == null)
+            if (socket == null) {
                 System.out.println("\u001B[31m" + "Wrong server name!");
+                System.out.print("\u001B[0m" + "Plese enter server name:");
+                nameserver = scanner.nextLine();
+            }
         }
-        System.out.println("\u001B[0m" + "Waiting for other players");
+        System.out.println("\u001B[0m" + "Waiting for other players...");
     }
 
     private void getusers() {
@@ -97,8 +99,8 @@ public class Client {
             Object object = objectInput.readObject();
             userArrayList = (ArrayList<String>) object;
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("Getusers errot");
+            e.printStackTrace();
+//            System.out.println("Getusers errot");
         }
     }
 

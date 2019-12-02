@@ -70,7 +70,7 @@ public class Server {
             String clinetname = in.readLine();
             User user = new User(socket, clinetname);
             userArrayList.add(user);
-            System.out.println("user " + user.getName() + " connected!");
+            System.out.println("User " + user.getName() + " connected!");
         }
         threads.stop();
         System.out.println("Users connected \nThe game already started...");
@@ -104,6 +104,5 @@ public class Server {
     public InetAddress getIp() {
         return ip;
     }
-
 
 }
