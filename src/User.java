@@ -1,6 +1,4 @@
 import java.io.Serializable;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class User implements Serializable {

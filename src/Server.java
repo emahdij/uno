@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Server {
     private String servername;
@@ -11,7 +12,7 @@ public class Server {
     private int capacity;
     private Reserve reserve = new Reserve();
     private Thread threads;
-    private ArrayList<User> userArrayList;
+    private ArrayList<User> userArrayList = new ArrayList<User>();
     private InetAddress ip;
 
     public Server(String servername, String adminname, int capacity, InetAddress ip) {
@@ -21,22 +22,27 @@ public class Server {
         this.ip = ip;
     }
 
-    public Server(String servername, String adminname, int capacity, ArrayList<User> userArrayList) {
-        this.servername = servername;
-        this.adminname = adminname;
-        this.capacity = capacity;
-        this.userArrayList = userArrayList;
+    public Server() {
         reserve.setReserve(1);
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter server name:");
+        this.servername = scanner.nextLine();
+        System.out.print("Please enter Admin name: ");
+        this.adminname = scanner.nextLine();
+        System.out.print("Please enter capacity of server(2/4): ");
+        String in = scanner.nextLine();
+        boolean sw = true;
+        while (sw) {
+            if (in.equals("2") | in.equals("4")) {
+                this.capacity = Integer.parseInt(in);
+                sw = false;
+            } else {
+                System.out.println("\u001B[31m" + "Wrong!");
+                System.out.print("\u001B[0m" + "Please enter capacity of server(2/4): ");
+                in = scanner.nextLine();
+            }
+        }
     }
-
-    public String getServername() {
-        return servername;
-    }
-
-    public InetAddress getIp() {
-        return ip;
-    }
-
 
     public void start() {
         userArrayList.add(new User(adminname, true));
@@ -49,41 +55,37 @@ public class Server {
         }
     }
 
-
     private void broadcast() {
         threads = new Thread_broadcast(reserve, servername, adminname, capacity);
         threads.start();
     }
 
-
     private void listen() throws Exception {
         ServerSocket serverSocket = new ServerSocket(4778);
         while (reserve.getReserve() < capacity) {
-            System.out.println("server waiting");
+            System.out.println("Server waiting...");
             Socket socket = serverSocket.accept();
             reserve.setReserve(reserve.getReserve() + 1);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String clinetname = in.readLine();
             User user = new User(socket, clinetname);
             userArrayList.add(user);
-            System.out.println("user " + user.getName() + " connected");
+            System.out.println("user " + user.getName() + " connected!");
         }
         threads.stop();
-        System.out.println("users connected \n the game already started.");
+        System.out.println("Users connected \nThe game already started...");
     }
-
 
     private void negotiation() {
         client:
         for (int i = 0; i < userArrayList.size(); i++) {
-            ArrayList<User> userArray = new ArrayList<User>();
+            ArrayList<String> userArray = new ArrayList<String>();
             array:
             for (int j = 0; j < userArrayList.size(); j++) {
                 if (i == j) continue array;
                 if (userArrayList.get(i).isAdmin()) continue client;
-                userArray.add(userArrayList.get(j));
+                userArray.add(userArrayList.get(j).getName());
             }
-
             try {
                 Socket socket = userArrayList.get(i).getSocket();
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -92,8 +94,16 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
+
+    public String getServername() {
+        return servername;
+    }
+
+    public InetAddress getIp() {
+        return ip;
+    }
+
 
 }
