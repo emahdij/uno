@@ -1,13 +1,4 @@
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Scanner;
-
-import static java.awt.Color.BLUE;
-import static java.awt.Color.white;
 
 
 public class Main {
