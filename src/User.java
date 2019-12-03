@@ -52,23 +52,33 @@ public class User implements Serializable {
         String c = "";
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < playercards.size(); j++) {
+                String color;
+                if (playercards.get(j).getColor() == "Red")
+                    color = "\u001B[31m";
+                else if (playercards.get(j).getColor() == "Blu")
+                    color = "\u001B[34m";
+                else if (playercards.get(j).getColor() == "Grn")
+                    color = "\u001B[32m";
+                else if (playercards.get(j).getColor() == "Ylw")
+                    color = "\u001B[33m";
+                else color = "\u001B[30m";
                 if (!playercards.get(j).isSpecial()) {
                     if (i == 1) {
-                        c = c + "| " + playercards.get(j).getColor() + " |" + " ";
+                        c += color + "| " + playercards.get(j).getColor() + " |" + "   ";
                     } else if (i == 2) {
-                        c = c + "|  " + playercards.get(j).getValue() + "  |" + " ";
+                        c += color + "|  " + playercards.get(j).getValue() + "  |" + "   ";
                     } else {
-                        c = c + card[i] + " ";
+                        c += color + card[i] + " ";
                     }
                 } else {
                     if (i == 1) {
-                        c = c + "| " + "+" + playercards.get(j).getValue() + "  |" + " ";
+                        c += color + "| " + "+" + playercards.get(j).getValue() + "  |" + "   ";
                     } else {
-                        c = c + card[i] + " ";
+                        c += color + card[i] + " ";
                     }
                 }
             }
-            c += "\n";
+            c += "\u001B[0m" + "\n";
         }
         System.out.print(c);
     }

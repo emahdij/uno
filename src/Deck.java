@@ -7,7 +7,7 @@ public class Deck {
 
     public Deck() {
         deck = new ArrayList<Card>();
-        String[] colors = {"red", "blu", "grn", "ylw"};
+        String[] colors = {"Red", "Blu", "Grn", "Ylw"};
         int[] numbers = {1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 0};
         int[] specialnumbers = {2, 2, 4, 4};
 

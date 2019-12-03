@@ -20,7 +20,7 @@ public class Client {
         search(port, time);
         connect();
         getusers();
-
+        printusers();
     }
 
     private void search(int port, int time) {
@@ -62,6 +62,7 @@ public class Client {
 //                e.printStackTrace();
                 System.out.println("Searching in network problem");
             }
+
         }
         socket.close();
     }
@@ -77,7 +78,7 @@ public class Client {
                     socket = new Socket(serverArrayList.get(i).getIp(), 4778);
                     OutputStream outstream = socket.getOutputStream();
                     PrintWriter out = new PrintWriter(outstream);
-                    System.out.print("Plese enter you username name:");
+                    System.out.print("Plese enter your username name:");
                     this.username = scanner.nextLine();
                     out.println(this.username);
                     out.flush();
@@ -104,4 +105,10 @@ public class Client {
         }
     }
 
+    private void printusers() {
+        Main.clearConsole();
+        System.out.println("Player names:");
+        for (int i = 0; i < userArrayList.size(); i++)
+            System.out.println("| " + userArrayList.get(i) + " |");
+    }
 }

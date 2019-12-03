@@ -14,6 +14,7 @@ public class Server {
     private Thread threads;
     private ArrayList<User> userArrayList = new ArrayList<User>();
     private InetAddress ip;
+    private Uno uno;
 
     public Server(String servername, String adminname, int capacity, InetAddress ip) {
         this.servername = servername;
@@ -50,6 +51,8 @@ public class Server {
             broadcast();
             listen();
             negotiation();
+            uno = new Uno(userArrayList);
+            uno.play();
         } catch (Exception e) {
             System.out.println("Listan problem");
         }
@@ -82,7 +85,6 @@ public class Server {
             ArrayList<String> userArray = new ArrayList<String>();
             array:
             for (int j = 0; j < userArrayList.size(); j++) {
-                if (i == j) continue array;
                 if (userArrayList.get(i).isAdmin()) continue client;
                 userArray.add(userArrayList.get(j).getName());
             }
