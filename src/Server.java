@@ -61,8 +61,8 @@ public class Server {
             System.out.println("");
 //            uno.play();
         } catch (Exception e) {
-            e.printStackTrace();
-//            System.out.println("Listan problem");
+//            e.printStackTrace();
+            System.out.println("Listan problem");
         }
     }
 

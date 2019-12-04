@@ -51,16 +51,16 @@ public class User {
         String c = "";
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < playercards.size(); j++) {
-                String color;
-                if (playercards.get(j).getColor() == "Red")
+                String color = "";
+                if (playercards.get(j).getColor().equals("Red"))
                     color = "\u001B[31m";
-                else if (playercards.get(j).getColor() == "Blu")
+                else if (playercards.get(j).getColor().equals("Blu"))
                     color = "\u001B[34m";
-                else if (playercards.get(j).getColor() == "Grn")
+                else if (playercards.get(j).getColor().equals("Grn"))
                     color = "\u001B[32m";
-                else if (playercards.get(j).getColor() == "Ylw")
+                else if (playercards.get(j).getColor().equals("Ylw"))
                     color = "\u001B[33m";
-                else color = "\u001B[30m";
+//                else color = "\u001B[30m";
                 if (!playercards.get(j).isSpecial()) {
                     if (i == 1) {
                         c += color + "| " + playercards.get(j).getColor() + " |" + "   ";
