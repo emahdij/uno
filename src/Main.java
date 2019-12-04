@@ -55,7 +55,7 @@ public class Main {
             String in = scanner.nextLine();
             if (in.equals("1")) {
                 Client client = new Client();
-                client.start(4778, 3000);
+                client.start(4778, 2000);
 
             } else if (in.equals("2")) {
                 System.out.println();

@@ -1,4 +1,6 @@
-class Card {
+import java.io.Serializable;
+
+class Card implements Serializable {
 
     private String color;
     private int value;

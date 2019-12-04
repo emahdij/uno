@@ -1,8 +1,7 @@
-import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class User implements Serializable {
+public class User {
     private String name;
     private Socket socket;
     private boolean admin;
@@ -48,7 +47,7 @@ public class User implements Serializable {
     }
 
     public void showCards() {
-        String[] card = {" ----- ", "|     |", "|     |", " ----- "};
+        String[] card = {" -----   ", "|     |", "|     |", " -----   "};
         String c = "";
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < playercards.size(); j++) {
@@ -74,13 +73,21 @@ public class User implements Serializable {
                     if (i == 1) {
                         c += color + "| " + "+" + playercards.get(j).getValue() + "  |" + "   ";
                     } else {
-                        c += color + card[i] + " ";
+                        c += color + card[i] + "   ";
                     }
                 }
             }
             c += "\u001B[0m" + "\n";
         }
         System.out.print(c);
+    }
+
+    public void setPlayercards(ArrayList<Card> playercards) {
+        this.playercards = playercards;
+    }
+
+    public ArrayList<Card> getPlayercards() {
+        return playercards;
     }
 
     public boolean hasWon() {

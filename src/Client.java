@@ -14,13 +14,15 @@ public class Client {
     private ArrayList<Server> serverArrayList = new ArrayList<Server>();
     private ArrayList<String> userArrayList;
     private Socket socket;
-    private String username;
+    private User user;
 
     public void start(int port, int time) throws Exception {
         search(port, time);
         connect();
         getusers();
         printusers();
+        getcards();
+        user.showCards();
     }
 
     private void search(int port, int time) {
@@ -62,7 +64,6 @@ public class Client {
 //                e.printStackTrace();
                 System.out.println("Searching in network problem");
             }
-
         }
         socket.close();
     }
@@ -78,9 +79,10 @@ public class Client {
                     socket = new Socket(serverArrayList.get(i).getIp(), 4778);
                     OutputStream outstream = socket.getOutputStream();
                     PrintWriter out = new PrintWriter(outstream);
-                    System.out.print("Plese enter your username name:");
-                    this.username = scanner.nextLine();
-                    out.println(this.username);
+                    System.out.print("Plese enter your username:");
+                    String username = scanner.nextLine();
+                    user = new User(username, false);
+                    out.println(username);
                     out.flush();
                     sw = false;
                 }
@@ -107,8 +109,20 @@ public class Client {
 
     private void printusers() {
         Main.clearConsole();
-        System.out.println("Player names:");
+        System.out.println("Players:");
         for (int i = 0; i < userArrayList.size(); i++)
             System.out.println("| " + userArrayList.get(i) + " |");
+    }
+
+    private void getcards() {
+        try {
+            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+            Object object = objectInput.readObject();
+
+            user.setPlayercards((ArrayList<Card>) object);
+        } catch (Exception e) {
+            e.printStackTrace();
+//            System.out.println("Getusers errot");
+        }
     }
 }

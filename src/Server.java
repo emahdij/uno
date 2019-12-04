@@ -51,11 +51,18 @@ public class Server {
             broadcast();
             listen();
             negotiation();
-            printusers();
             uno = new Uno(userArrayList);
-            uno.play();
+            sendcards();
+            printusers();
+            for (int i = 0; i < userArrayList.size(); i++) {
+                if (userArrayList.get(i).isAdmin())
+                    userArrayList.get(i).showCards();
+            }
+            System.out.println("");
+//            uno.play();
         } catch (Exception e) {
-            System.out.println("Listan problem");
+            e.printStackTrace();
+//            System.out.println("Listan problem");
         }
     }
 
@@ -100,11 +107,28 @@ public class Server {
         }
     }
 
+    private void sendcards() {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).isAdmin())
+                continue;
+            try {
+                ArrayList<Card> cardArrayList = userArrayList.get(i).getPlayercards();
+                Socket socket = userArrayList.get(i).getSocket();
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectOutputStream.writeObject(cardArrayList);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void printusers() {
         Main.clearConsole();
-        System.out.println("Player names:");
+        System.out.println("Players:");
         for (int i = 0; i < userArrayList.size(); i++)
             System.out.println("| " + userArrayList.get(i) + " |");
+        System.out.println("");
     }
 
     public String getServername() {
