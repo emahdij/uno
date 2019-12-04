@@ -73,7 +73,7 @@ public class User {
                     if (i == 1) {
                         c += color + "| " + "+" + playercards.get(j).getValue() + "  |" + "   ";
                     } else {
-                        c += color + card[i] + "   ";
+                        c += color + card[i] + " ";
                     }
                 }
             }
