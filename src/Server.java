@@ -51,6 +51,7 @@ public class Server {
             broadcast();
             listen();
             negotiation();
+            printusers();
             uno = new Uno(userArrayList);
             uno.play();
         } catch (Exception e) {
@@ -97,6 +98,13 @@ public class Server {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void printusers() {
+        Main.clearConsole();
+        System.out.println("Player names:");
+        for (int i = 0; i < userArrayList.size(); i++)
+            System.out.println("| " + userArrayList.get(i) + " |");
     }
 
     public String getServername() {
