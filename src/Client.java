@@ -15,13 +15,15 @@ public class Client {
     private ArrayList<String> userArrayList;
     private Socket socket;
     private User user;
+    private String playerturn;
 
     public void start(int port, int time) throws Exception {
         search(port, time);
         connect();
         getusers();
-        printusers();
         getcards();
+        getturnuser();
+        printusers(playerturn);
         user.showCards();
     }
 
@@ -55,7 +57,7 @@ public class Client {
                     }
                 }
                 if (!duplicated) {
-                    System.out.println("New server found:" + message[2] + " " + "capacity:" + message[4] + "/" + message[5]);
+                    System.out.println("New server found: " + message[2] + " " + "capacity:" + message[4] + "/" + message[5]);
                     serverArrayList.add(new Server(message[2], message[3], Integer.parseInt(message[4]), packet.getAddress()));
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -107,22 +109,40 @@ public class Client {
         }
     }
 
-    private void printusers() {
+    private void printusers(String player) {
         Main.clearConsole();
         System.out.println("Players:");
-        for (int i = 0; i < userArrayList.size(); i++)
-            System.out.println("| " + userArrayList.get(i) + " |");
+        for (int i = 0; i < userArrayList.size(); i++) {
+            System.out.print(userArrayList.get(i) + " ");
+            if (userArrayList.get(i).equals(player))
+                System.out.println("*");
+            else System.out.println("");
+        }
+        System.out.println("=========================");
+        System.out.println("");
     }
 
     private void getcards() {
         try {
             ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
             Object object = objectInput.readObject();
-
             user.setPlayercards((ArrayList<Card>) object);
         } catch (Exception e) {
-            e.printStackTrace();
-//            System.out.println("Getusers errot");
+//            e.printStackTrace();
+            System.out.println("Getusers error");
         }
     }
+
+    private void getturnuser() {
+        try {
+            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+            Object object = objectInput.readObject();
+            playerturn = (String) object;
+        } catch (Exception e) {
+            e.printStackTrace();
+//            System.out.println("Getturn user error ");
+        }
+
+    }
+
 }

@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Server {
@@ -15,6 +16,7 @@ public class Server {
     private ArrayList<User> userArrayList = new ArrayList<User>();
     private InetAddress ip;
     private Uno uno;
+
 
     public Server(String servername, String adminname, int capacity, InetAddress ip) {
         this.servername = servername;
@@ -53,13 +55,7 @@ public class Server {
             negotiation();
             uno = new Uno(userArrayList);
             sendcards();
-            printusers();
-            for (int i = 0; i < userArrayList.size(); i++) {
-                if (userArrayList.get(i).isAdmin())
-                    userArrayList.get(i).showCards();
-            }
-            System.out.println("");
-//            uno.play();
+            uno.play();
         } catch (Exception e) {
 //            e.printStackTrace();
             System.out.println("Listan problem");
@@ -121,14 +117,6 @@ public class Server {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void printusers() {
-        Main.clearConsole();
-        System.out.println("Players:");
-        for (int i = 0; i < userArrayList.size(); i++)
-            System.out.println("| " + userArrayList.get(i) + " |");
-        System.out.println("");
     }
 
     public String getServername() {

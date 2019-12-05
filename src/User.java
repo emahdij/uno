@@ -60,7 +60,7 @@ public class User {
                     color = "\u001B[32m";
                 else if (playercards.get(j).getColor().equals("Ylw"))
                     color = "\u001B[33m";
-//                else color = "\u001B[30m";
+                else color = "\u001B[0m";
                 if (!playercards.get(j).isSpecial()) {
                     if (i == 1) {
                         c += color + "| " + playercards.get(j).getColor() + " |" + "   ";
