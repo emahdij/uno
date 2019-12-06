@@ -3,6 +3,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -35,7 +36,7 @@ public class Uno {
         wh:
         while (true) {
             playerTurn();
-            sendcards(true);
+            sendcards(current, 0);
             printusers(playerNumber);
             printcards();
             System.out.println("Current card:");
@@ -45,7 +46,7 @@ public class Uno {
             if (userArrayList.get(playerNumber).isAdmin()) {
                 boolean sw = true;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: 2 ReD or 4)");
+                    System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
@@ -89,11 +90,21 @@ public class Uno {
                     } else {
                         sw = !sw;
                         current = card;
+                        cardpile.add(card);
                     }
                 }
             } else {
-                System.out.println("Wair for player!");
-                getcard(playerNumber);
+                System.out.println("Wair for players!");
+                String clientack = getmassage(playerNumber);
+                if (clientack.equalsIgnoreCase("ok")) {
+                    cardpile.add(getcard(playerNumber));
+                } else {
+                    if (deck.isEmpty())
+                        deck = new Deck(cardpile);
+                    Card pick = deck.getTopCard();
+                    userArrayList.get(playerNumber).pickCards(pick);
+                    sendPickCard(pick);
+                }
             }
             playerNumber++;
             playerNumber = playerNumber % userArrayList.size();
@@ -154,8 +165,8 @@ public class Uno {
     }
 
 
-    public void sendcards(boolean current) {
-        if (!current) {
+    public void sendcards(Card current, int sw) {
+        if (sw == 1) {
             for (int i = 0; i < userArrayList.size(); i++) {
                 if (userArrayList.get(i).isAdmin())
                     continue;
@@ -165,36 +176,56 @@ public class Uno {
                     objectOutputStream.writeObject(cardArrayList);
                     objectOutputStream.flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    System.out.println("Network Error");
                 }
             }
         } else {
             for (int i = 0; i < userArrayList.size(); i++) {
-                if (userArrayList.get(i).isAdmin())
-                    continue;
                 try {
                     ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
-                    objectOutputStream.writeObject(this.current);
+                    objectOutputStream.writeObject(current);
                     objectOutputStream.flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
+//                    e.printStackTrace();
+                    System.out.println("Network Error");
                 }
-
             }
         }
     }
 
-    public void getcard(int playernumber) {
+    private void sendPickCard(Card card) {
+        try {
+            ObjectOutputStream objectOutputStream = userArrayList.get(playerNumber).getObjectOutputStream();
+            objectOutputStream.writeObject(card);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+//            e.printStackTrace();
+            System.out.println("Network Error");
+        }
+    }
+
+    public Card getcard(int playernumber) {
         try {
             ObjectInputStream objectInput = userArrayList.get(playernumber).getObjectInputStream();
             Object object = objectInput.readObject();
             current = (Card) object;
+            return current;
         } catch (Exception e) {
-            e.printStackTrace();
-//            System.out.println("Getcards error");
+//            e.printStackTrace();
+            System.out.println("Getcards error");
         }
-
+        return null;
     }
 
-
+    private String getmassage(int playerNumber) {
+        try {
+            ObjectInputStream objectInput = userArrayList.get(playerNumber).getObjectInputStream();
+            return (String) objectInput.readObject();
+        } catch (Exception e) {
+//            e.printStackTrace();
+            System.out.println("GetAck error");
+        }
+        return null;
+    }
 }

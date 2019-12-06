@@ -54,7 +54,7 @@ public class Server {
             listen();
             negotiation();
             uno = new Uno(userArrayList);
-            uno.sendcards(false);
+            uno.sendcards(null,1);
             uno.play();
         } catch (Exception e) {
             e.printStackTrace();

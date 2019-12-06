@@ -43,17 +43,22 @@ public class Client {
             if (playerturn.equals(user.getName())) {
                 boolean sw = true;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: 2 ReD or 4)");
+                    System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (Pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
                     try {
                         if (splitestring.length == 1) {
-                            for (int i = 0; i < user.getPlayercards().size(); i++) {
-                                if (user.getPlayercards().get(i).isSpecial() & current.isSpecial() &
-                                        user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
-                                    card = user.getPlayercards().remove(i);
-                                    break;
+                            if (splitestring[1].equalsIgnoreCase("Pick")) {
+                                sendAcc("pick");
+                                user.getPlayercards().add(getcards(true));
+                            } else {
+                                for (int i = 0; i < user.getPlayercards().size(); i++) {
+                                    if (user.getPlayercards().get(i).isSpecial() & current.isSpecial() &
+                                            user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                        card = user.getPlayercards().remove(i);
+                                        break;
+                                    }
                                 }
                             }
                         } else if (splitestring.length == 2) {
@@ -82,11 +87,12 @@ public class Client {
                     } else {
                         sw = !sw;
                         current = card;
+                        sendAcc("ok");
                         sendcard(card);
                     }
                 }
             }
-            System.out.println("Wair for player!");
+            System.out.println("Waite for players!");
             getturnuser();
         }
     }
@@ -209,6 +215,7 @@ public class Client {
         return null;
     }
 
+
     private void sendcard(Card card) {
         try {
             ObjectOutputStream objectOutputStream = this.objectOutputStream;
@@ -217,7 +224,6 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private void getturnuser() {
@@ -228,6 +234,16 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
 //            System.out.println("Getturn user error ");
+        }
+    }
+
+    private void sendAcc(String ack) {
+        try {
+            ObjectOutputStream objectOutputStream = this.objectOutputStream;
+            objectOutputStream.writeObject(ack);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
