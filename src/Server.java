@@ -54,7 +54,7 @@ public class Server {
             listen();
             negotiation();
             uno = new Uno(userArrayList);
-            sendcards();
+            uno.sendcards(false);
             uno.play();
         } catch (Exception e) {
 //            e.printStackTrace();
@@ -103,21 +103,6 @@ public class Server {
         }
     }
 
-    private void sendcards() {
-        for (int i = 0; i < userArrayList.size(); i++) {
-            if (userArrayList.get(i).isAdmin())
-                continue;
-            try {
-                ArrayList<Card> cardArrayList = userArrayList.get(i).getPlayercards();
-                Socket socket = userArrayList.get(i).getSocket();
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                objectOutputStream.writeObject(cardArrayList);
-                objectOutputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public String getServername() {
         return servername;

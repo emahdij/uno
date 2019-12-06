@@ -36,25 +36,32 @@ class Card implements Serializable {
     public String toString() {
         String[] card = {" ----- ", "|     |", "|     |", " ----- "};
         String c = "";
+        String color = "";
+        if (this.getColor().equals("Red"))
+            color = "\u001B[31m";
+        else if (this.getColor().equals("Blu"))
+            color = "\u001B[34m";
+        else if (this.getColor().equals("Grn"))
+            color = "\u001B[32m";
+        else if (this.getColor().equals("Ylw"))
+            color = "\u001B[33m";
+        else color = "\u001B[0m";
         for (int i = 0; i < card.length; i++) {
             for (int j = 0; j < 1; j++) {
                 if (!this.isSpecial()) {
-                    if (i == 1) {
-                        c = c + "| " + this.getColor() + " |" + " ";
-                    } else if (i == 2) {
-                        c = c + "|  " + this.getValue() + "  |" + " ";
-                    } else {
-                        c = c + card[i] + " ";
-                    }
+                    if (i == 1)
+                        c += color + "| " + this.getColor() + " |" + " ";
+                    else if (i == 2)
+                        c += color + "|  " + this.getValue() + "  |" + " ";
+                    else c += color + card[i] + " ";
                 } else {
-                    if (i == 1) {
-                        c = c + "| " + "+" + this.getValue() + "  |" + " ";
-                    } else {
-                        c = c + card[i] + " ";
-                    }
+                    if (i == 1)
+                        c += color + "| " + "+" + this.getValue() + "  |" + " ";
+                    else
+                        c += color + card[i] + " ";
                 }
             }
-            c += "\n";
+            c += "\u001B[0m" + "\n";
         }
         return c;
     }

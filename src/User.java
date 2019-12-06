@@ -47,6 +47,7 @@ public class User {
     }
 
     public void showCards() {
+        System.out.println("Your cards:");
         String[] card = {" -----   ", "|     |", "|     |", " -----   "};
         String c = "";
         for (int i = 0; i < card.length; i++) {
@@ -70,16 +71,18 @@ public class User {
                         c += color + card[i] + " ";
                     }
                 } else {
-                    if (i == 1) {
-                        c += color + "| " + "+" + playercards.get(j).getValue() + "  |" + "   ";
-                    } else {
+                    if (i == 0 | i == 3)
                         c += color + card[i] + " ";
-                    }
+                    else if (i == 1)
+                        c += color + "| " + "+" + playercards.get(j).getValue() + "  |" + "   ";
+                    else
+                        c += color + card[i] + "   ";
                 }
             }
             c += "\u001B[0m" + "\n";
         }
         System.out.print(c);
+        System.out.println("");
     }
 
     public void setPlayercards(ArrayList<Card> playercards) {

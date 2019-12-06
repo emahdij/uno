@@ -1,6 +1,4 @@
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -16,15 +14,52 @@ public class Client {
     private Socket socket;
     private User user;
     private String playerturn;
+    private Card current;
 
     public void start(int port, int time) throws Exception {
         search(port, time);
         connect();
         getusers();
-        getcards();
-        getturnuser();
-        printusers(playerturn);
-        user.showCards();
+        getcards(false);
+        wh:
+        while (true) {
+            Main.clearConsole();
+            getturnuser();
+            current = getcards(true);
+            printusers(playerturn);
+            user.showCards();
+            System.out.println("Current card:");
+            System.out.println(current.toString());
+            if (playerturn.equals(user.getName())) {
+                System.out.println("Pick up the card! (EX: 2 ReD or 4)");
+                String cardnumber = scanner.nextLine();
+                String[] splitestring = cardnumber.split(" ");
+                Card card = null;
+                try {
+                    if (splitestring.length == 1) {
+                        for (int i = 0; i < user.getPlayercards().size(); i++) {
+                            if (user.getPlayercards().get(i).isSpecial()
+                                    & user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                card = user.getPlayercards().remove(i);
+                            }
+                        }
+                    } else if (splitestring.length == 2) {
+                        for (int i = 0; i < user.getPlayercards().size(); i++) {
+                            if (!user.getPlayercards().get(i).isSpecial() &
+                                    user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
+                                    user.getPlayercards().get(i).getColor().equals(splitestring[0])) {
+                                card = user.getPlayercards().remove(i);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                }
+                if (card == null)
+                    continue wh;
+                else current = card;
+                sendcard(card);
+            }
+        }
     }
 
     private void search(int port, int time) {
@@ -122,15 +157,40 @@ public class Client {
         System.out.println("");
     }
 
-    private void getcards() {
-        try {
-            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
-            Object object = objectInput.readObject();
-            user.setPlayercards((ArrayList<Card>) object);
-        } catch (Exception e) {
+    private Card getcards(boolean current) {
+        if (!current) {
+            try {
+                ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+                Object object = objectInput.readObject();
+                user.setPlayercards((ArrayList<Card>) object);
+                return null;
+            } catch (Exception e) {
 //            e.printStackTrace();
-            System.out.println("Getusers error");
+                System.out.println("Getcards error");
+            }
+        } else {
+            try {
+                ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+                Object object = objectInput.readObject();
+                return (Card) object;
+            } catch (Exception e) {
+//                e.printStackTrace();
+                System.out.println("Getcards error");
+            }
         }
+        return null;
+    }
+
+    private void sendcard(Card card) {
+        try {
+            Socket socket = user.getSocket();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectOutputStream.writeObject(card);
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void getturnuser() {
@@ -142,7 +202,7 @@ public class Client {
             e.printStackTrace();
 //            System.out.println("Getturn user error ");
         }
-
     }
+
 
 }

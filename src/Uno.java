@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -30,10 +31,19 @@ public class Uno {
 
     public void play() {
         playerNumber = random.nextInt(userArrayList.size());
-        playerTurn();
-        printusers(playerNumber);
-        printcards();
-
+        int i = 0;
+        while (i < 10) {
+            playerTurn();
+            sendcards(true);
+            printusers(playerNumber);
+            printcards();
+            System.out.println("Current card:");
+            System.out.println(current);
+            getcard(playerNumber);
+            playerNumber++;
+            playerNumber = playerNumber % userArrayList.size();
+            i++;
+        }
     }
 
     private Card getStartingCard() {
@@ -68,12 +78,10 @@ public class Uno {
 
 
     private void printcards() {
-        System.out.println("Your cards:");
         for (int i = 0; i < userArrayList.size(); i++) {
             if (userArrayList.get(i).isAdmin())
                 userArrayList.get(i).showCards();
         }
-        System.out.println("");
     }
 
     public void playerTurn() {
@@ -88,6 +96,51 @@ public class Uno {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    public void sendcards(boolean current) {
+        if (!current) {
+            for (int i = 0; i < userArrayList.size(); i++) {
+                if (userArrayList.get(i).isAdmin())
+                    continue;
+                try {
+                    ArrayList<Card> cardArrayList = userArrayList.get(i).getPlayercards();
+                    Socket socket = userArrayList.get(i).getSocket();
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    objectOutputStream.writeObject(cardArrayList);
+                    objectOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            for (int i = 0; i < userArrayList.size(); i++) {
+                if (userArrayList.get(i).isAdmin())
+                    continue;
+                try {
+                    Socket socket = userArrayList.get(i).getSocket();
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    objectOutputStream.writeObject(this.current);
+                    objectOutputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+    }
+
+    public void getcard(int playernumber) {
+        try {
+            ObjectInputStream objectInput = new ObjectInputStream(userArrayList.get(playernumber).getSocket().getInputStream());
+            Object object = objectInput.readObject();
+            current = (Card) object;
+        } catch (Exception e) {
+//            e.printStackTrace();
+            System.out.println("Getcards error");
+        }
+
     }
 
 
