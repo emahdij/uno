@@ -12,7 +12,7 @@ public class Client {
     private ArrayList<Server> serverArrayList = new ArrayList<Server>();
     private ArrayList<String> userArrayList;
     private Socket socket;
-    private User user;
+    private static User user;
     private String playerturn;
     private Card current;
     private static ObjectOutputStream objectOutputStream;
@@ -30,11 +30,11 @@ public class Client {
         }
         getusers();
         getcards(false);
-        getturnuser();
         wh:
         while (true) {
-            Main.clearConsole();
+            getturnuser();
             current = getcards(true);
+            Main.clearConsole();
             printusers(playerturn);
             user.showCards();
             System.out.println("Current card:");
@@ -42,6 +42,7 @@ public class Client {
             System.out.println("=========================");
             if (playerturn.equals(user.getName())) {
                 boolean sw = true;
+                boolean pick = false;
                 while (sw) {
                     System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (Pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
@@ -49,9 +50,11 @@ public class Client {
                     Card card = null;
                     try {
                         if (splitestring.length == 1) {
-                            if (splitestring[1].equalsIgnoreCase("Pick")) {
+                            if (splitestring[0].equalsIgnoreCase("Pick")) {
                                 sendAcc("pick");
-                                user.getPlayercards().add(getcards(true));
+                                Card card1 = getcards(true);
+                                pick = true;
+                                user.getPlayercards().add(card1);
                             } else {
                                 for (int i = 0; i < user.getPlayercards().size(); i++) {
                                     if (user.getPlayercards().get(i).isSpecial() & current.isSpecial() &
@@ -81,9 +84,11 @@ public class Client {
                         user.showCards();
                         System.out.println("Current card:");
                         System.out.println(current.toString());
-                        System.out.println("=========================");
-                        System.out.println("\u001B[31m" + "Chosen card is incorrect!");
-                        System.out.println("\u001B[0m" + "=========================");
+                        if (!pick) {
+                            System.out.println("=========================");
+                            System.out.println("\u001B[31m" + "Chosen card is incorrect!");
+                            System.out.println("\u001B[0m" + "=========================");
+                        } else pick = false;
                     } else {
                         sw = !sw;
                         current = card;
@@ -92,8 +97,8 @@ public class Client {
                     }
                 }
             }
-            System.out.println("Waite for players!");
-            getturnuser();
+            System.out.println("Wait for players!");
+            current = getcards(true);
         }
     }
 
@@ -227,12 +232,21 @@ public class Client {
     }
 
     private void getturnuser() {
+        Object object = null;
         try {
             ObjectInputStream objectInput = objectInputStream;
-            Object object = objectInput.readObject();
+            object = objectInput.readObject();
+        } catch (Exception e) {
+
+        }
+        try {
             playerturn = (String) object;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("card be ja string ");
+            Card newcard = (Card) object;
+            System.out.println(newcard.getColor());
+            System.out.println(newcard.getValue());
+//            e.printStackTrace();
 //            System.out.println("Getturn user error ");
         }
     }

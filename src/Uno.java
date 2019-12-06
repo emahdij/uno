@@ -42,9 +42,9 @@ public class Uno {
             System.out.println("Current card:");
             System.out.println(current);
             System.out.println("=========================");
-
             if (userArrayList.get(playerNumber).isAdmin()) {
                 boolean sw = true;
+                boolean pick = false;
                 while (sw) {
                     System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
@@ -59,10 +59,17 @@ public class Uno {
                             }
                         }
                         if (splitestring.length == 1) {
-                            for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
-                                if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() & current.isSpecial() &
-                                        userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
-                                    card = userArrayList.get(indx).getPlayercards().remove(i);
+                            if (splitestring[0].equalsIgnoreCase("pick")) {
+                                pick = true;
+                                if (deck.isEmpty())
+                                    deck = new Deck(cardpile);
+                                userArrayList.get(indx).pickCards(deck.getTopCard());
+                            } else {
+                                for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
+                                    if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() & current.isSpecial() &
+                                            userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                        card = userArrayList.get(indx).getPlayercards().remove(i);
+                                    }
                                 }
                             }
                         } else if (splitestring.length == 2) {
@@ -84,9 +91,11 @@ public class Uno {
                         printcards();
                         System.out.println("Current card:");
                         System.out.println(current);
-                        System.out.println("=========================");
-                        System.out.println("\u001B[31m" + "Chosen card is incorrect!");
-                        System.out.println("\u001B[0m" + "=========================");
+                        if (!pick) {
+                            System.out.println("=========================");
+                            System.out.println("\u001B[31m" + "Chosen card is incorrect!");
+                            System.out.println("\u001B[0m" + "=========================");
+                        } else pick = false;
                     } else {
                         sw = !sw;
                         current = card;
@@ -95,16 +104,15 @@ public class Uno {
                 }
             } else {
                 System.out.println("Wair for players!");
-                String clientack = getmassage(playerNumber);
-                if (clientack.equalsIgnoreCase("ok")) {
-                    cardpile.add(getcard(playerNumber));
-                } else {
+                while (getmassage(playerNumber).equalsIgnoreCase("pick")) {
                     if (deck.isEmpty())
                         deck = new Deck(cardpile);
                     Card pick = deck.getTopCard();
                     userArrayList.get(playerNumber).pickCards(pick);
                     sendPickCard(pick);
                 }
+                current = getcard(playerNumber);
+                cardpile.add(current);
             }
             playerNumber++;
             playerNumber = playerNumber % userArrayList.size();
