@@ -16,6 +16,7 @@ public class Uno {
     private int pick;
     private Random random = new Random();
     private int playerNumber;
+    private Scanner scanner = new Scanner(System.in);
 
     public Uno(ArrayList<User> users) {
         deck = new Deck();
@@ -31,18 +32,71 @@ public class Uno {
 
     public void play() {
         playerNumber = random.nextInt(userArrayList.size());
-        int i = 0;
-        while (i < 10) {
+        wh:
+        while (true) {
             playerTurn();
             sendcards(true);
             printusers(playerNumber);
             printcards();
             System.out.println("Current card:");
             System.out.println(current);
-            getcard(playerNumber);
+            System.out.println("=========================");
+
+            if (userArrayList.get(playerNumber).isAdmin()) {
+                boolean sw = true;
+                while (sw) {
+                    System.out.println("Pick up the card! (EX: 2 ReD or 4)");
+                    String cardnumber = scanner.nextLine();
+                    String[] splitestring = cardnumber.split(" ");
+                    Card card = null;
+                    try {
+                        int indx = 0;
+                        for (int i = 0; i < userArrayList.size(); i++) {
+                            if (userArrayList.get(i).isAdmin()) {
+                                indx = i;
+                                break;
+                            }
+                        }
+                        if (splitestring.length == 1) {
+                            for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
+                                if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() & current.isSpecial() &
+                                        userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                    card = userArrayList.get(indx).getPlayercards().remove(i);
+                                }
+                            }
+                        } else if (splitestring.length == 2) {
+                            for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
+                                if (!userArrayList.get(indx).getPlayercards().get(i).isSpecial() & !current.isSpecial() &
+                                        userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
+                                        userArrayList.get(indx).getPlayercards().get(i).getColor().equalsIgnoreCase(splitestring[0]) &
+                                        (current.getValue() == Integer.parseInt(splitestring[1]) |
+                                                current.getColor().equalsIgnoreCase(splitestring[0]))) {
+                                    card = userArrayList.get(indx).getPlayercards().remove(i);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                    }
+                    if (card == null) {
+                        Main.clearConsole();
+                        printusers(playerNumber);
+                        printcards();
+                        System.out.println("Current card:");
+                        System.out.println(current);
+                        System.out.println("=========================");
+                        System.out.println("\u001B[31m" + "Chosen card is incorrect!");
+                        System.out.println("\u001B[0m" + "=========================");
+                    } else {
+                        sw = !sw;
+                        current = card;
+                    }
+                }
+            } else {
+                System.out.println("Wair for player!");
+                getcard(playerNumber);
+            }
             playerNumber++;
             playerNumber = playerNumber % userArrayList.size();
-            i++;
         }
     }
 
@@ -88,12 +142,13 @@ public class Uno {
         for (int i = 0; i < userArrayList.size(); i++) {
             try {
                 if (userArrayList.get(i).isAdmin()) continue;
-                Socket socket = userArrayList.get(i).getSocket();
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                 objectOutputStream.writeObject(userArrayList.get(playerNumber).getName());
                 objectOutputStream.flush();
             } catch (IOException e) {
-                e.printStackTrace();
+//                e.printStackTrace();
+                System.out.println("Player left! Please run game again");
+                return;
             }
         }
     }
@@ -106,8 +161,7 @@ public class Uno {
                     continue;
                 try {
                     ArrayList<Card> cardArrayList = userArrayList.get(i).getPlayercards();
-                    Socket socket = userArrayList.get(i).getSocket();
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                     objectOutputStream.writeObject(cardArrayList);
                     objectOutputStream.flush();
                 } catch (IOException e) {
@@ -119,8 +173,7 @@ public class Uno {
                 if (userArrayList.get(i).isAdmin())
                     continue;
                 try {
-                    Socket socket = userArrayList.get(i).getSocket();
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                     objectOutputStream.writeObject(this.current);
                     objectOutputStream.flush();
                 } catch (IOException e) {
@@ -133,12 +186,12 @@ public class Uno {
 
     public void getcard(int playernumber) {
         try {
-            ObjectInputStream objectInput = new ObjectInputStream(userArrayList.get(playernumber).getSocket().getInputStream());
+            ObjectInputStream objectInput = userArrayList.get(playernumber).getObjectInputStream();
             Object object = objectInput.readObject();
             current = (Card) object;
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("Getcards error");
+            e.printStackTrace();
+//            System.out.println("Getcards error");
         }
 
     }

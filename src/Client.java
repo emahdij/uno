@@ -15,50 +15,79 @@ public class Client {
     private User user;
     private String playerturn;
     private Card current;
+    private static ObjectOutputStream objectOutputStream;
+    private static ObjectInputStream objectInputStream;
+
 
     public void start(int port, int time) throws Exception {
         search(port, time);
         connect();
+        try {
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         getusers();
         getcards(false);
+        getturnuser();
         wh:
         while (true) {
             Main.clearConsole();
-            getturnuser();
             current = getcards(true);
             printusers(playerturn);
             user.showCards();
             System.out.println("Current card:");
             System.out.println(current.toString());
+            System.out.println("=========================");
             if (playerturn.equals(user.getName())) {
-                System.out.println("Pick up the card! (EX: 2 ReD or 4)");
-                String cardnumber = scanner.nextLine();
-                String[] splitestring = cardnumber.split(" ");
-                Card card = null;
-                try {
-                    if (splitestring.length == 1) {
-                        for (int i = 0; i < user.getPlayercards().size(); i++) {
-                            if (user.getPlayercards().get(i).isSpecial()
-                                    & user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
-                                card = user.getPlayercards().remove(i);
+                boolean sw = true;
+                while (sw) {
+                    System.out.println("Pick up the card! (EX: 2 ReD or 4)");
+                    String cardnumber = scanner.nextLine();
+                    String[] splitestring = cardnumber.split(" ");
+                    Card card = null;
+                    try {
+                        if (splitestring.length == 1) {
+                            for (int i = 0; i < user.getPlayercards().size(); i++) {
+                                if (user.getPlayercards().get(i).isSpecial() & current.isSpecial() &
+                                        user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                    card = user.getPlayercards().remove(i);
+                                    break;
+                                }
+                            }
+                        } else if (splitestring.length == 2) {
+                            for (int i = 0; i < user.getPlayercards().size(); i++) {
+                                if (!user.getPlayercards().get(i).isSpecial() & !current.isSpecial() &
+                                        user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
+                                        user.getPlayercards().get(i).getColor().equalsIgnoreCase(splitestring[0]) &
+                                        (current.getValue() == user.getPlayercards().get(i).getValue() |
+                                                current.getColor().equalsIgnoreCase(splitestring[0]))) {
+                                    card = user.getPlayercards().remove(i);
+                                    break;
+                                }
                             }
                         }
-                    } else if (splitestring.length == 2) {
-                        for (int i = 0; i < user.getPlayercards().size(); i++) {
-                            if (!user.getPlayercards().get(i).isSpecial() &
-                                    user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
-                                    user.getPlayercards().get(i).getColor().equals(splitestring[0])) {
-                                card = user.getPlayercards().remove(i);
-                            }
-                        }
+                    } catch (Exception e) {
                     }
-                } catch (Exception e) {
+                    if (card == null) {
+                        Main.clearConsole();
+                        printusers(playerturn);
+                        user.showCards();
+                        System.out.println("Current card:");
+                        System.out.println(current.toString());
+                        System.out.println("=========================");
+                        System.out.println("\u001B[31m" + "Chosen card is incorrect!");
+                        System.out.println("\u001B[0m" + "=========================");
+                    } else {
+                        sw = !sw;
+                        current = card;
+                        sendcard(card);
+                    }
                 }
-                if (card == null)
-                    continue wh;
-                else current = card;
-                sendcard(card);
             }
+            System.out.println("Wair for player!");
+            getturnuser();
         }
     }
 
@@ -102,7 +131,6 @@ public class Client {
                 System.out.println("Searching in network problem");
             }
         }
-        socket.close();
     }
 
     private void connect() throws Exception {
@@ -135,7 +163,7 @@ public class Client {
 
     private void getusers() {
         try {
-            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+            ObjectInputStream objectInput = objectInputStream;
             Object object = objectInput.readObject();
             userArrayList = (ArrayList<String>) object;
         } catch (Exception e) {
@@ -160,22 +188,22 @@ public class Client {
     private Card getcards(boolean current) {
         if (!current) {
             try {
-                ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+                ObjectInputStream objectInput = objectInputStream;
                 Object object = objectInput.readObject();
                 user.setPlayercards((ArrayList<Card>) object);
                 return null;
             } catch (Exception e) {
-//            e.printStackTrace();
-                System.out.println("Getcards error");
+                e.printStackTrace();
+//                System.out.println("Getcards error");
             }
         } else {
             try {
-                ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+                ObjectInputStream objectInput = objectInputStream;
                 Object object = objectInput.readObject();
                 return (Card) object;
             } catch (Exception e) {
-//                e.printStackTrace();
-                System.out.println("Getcards error");
+                e.printStackTrace();
+//                System.out.println("Getcards error");
             }
         }
         return null;
@@ -183,8 +211,7 @@ public class Client {
 
     private void sendcard(Card card) {
         try {
-            Socket socket = user.getSocket();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            ObjectOutputStream objectOutputStream = this.objectOutputStream;
             objectOutputStream.writeObject(card);
             objectOutputStream.flush();
         } catch (IOException e) {
@@ -195,7 +222,7 @@ public class Client {
 
     private void getturnuser() {
         try {
-            ObjectInputStream objectInput = new ObjectInputStream(socket.getInputStream());
+            ObjectInputStream objectInput = objectInputStream;
             Object object = objectInput.readObject();
             playerturn = (String) object;
         } catch (Exception e) {

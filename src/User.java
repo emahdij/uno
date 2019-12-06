@@ -1,3 +1,5 @@
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -6,11 +8,19 @@ public class User {
     private Socket socket;
     private boolean admin;
     private ArrayList<Card> playercards = new ArrayList<Card>();
+    private static ObjectOutputStream objectOutputStream;
+    private static ObjectInputStream objectInputStream;
 
 
     public User(Socket socket, String name) {
         this.socket = socket;
         this.name = name;
+        try {
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public User(String name, boolean admin) {
@@ -111,4 +121,11 @@ public class User {
 //    }
 
 
+    public ObjectOutputStream getObjectOutputStream() {
+        return objectOutputStream;
+    }
+
+    public ObjectInputStream getObjectInputStream() {
+        return objectInputStream;
+    }
 }

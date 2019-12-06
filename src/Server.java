@@ -57,8 +57,8 @@ public class Server {
             uno.sendcards(false);
             uno.play();
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("Listan problem");
+            e.printStackTrace();
+//            System.out.println("Listan problem");
         }
     }
 
@@ -93,8 +93,9 @@ public class Server {
                 userArray.add(userArrayList.get(j).getName());
             }
             try {
-                Socket socket = userArrayList.get(i).getSocket();
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                Socket socket = userArrayList.get(i).getSocket();
+//                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                 objectOutputStream.writeObject(userArray);
                 objectOutputStream.flush();
             } catch (IOException e) {
