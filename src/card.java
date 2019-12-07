@@ -66,4 +66,7 @@ class Card implements Serializable {
         return c;
     }
 
+    public int getSpecialValue() {
+        return specialValue;
+    }
 }

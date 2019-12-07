@@ -1,9 +1,7 @@
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -46,7 +44,7 @@ public class Uno {
                 boolean sw = true;
                 boolean pick = false;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (pick) to puck up card from deck)");
+                    System.out.println("Pick up the card! (EX: (Red 2) or (4) or (pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
@@ -66,8 +64,8 @@ public class Uno {
                                 userArrayList.get(indx).pickCards(deck.getTopCard());
                             } else {
                                 for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
-                                    if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() & current.isSpecial() &
-                                            userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                    if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() &
+                                            userArrayList.get(indx).getPlayercards().get(i).getSpecialValue() == Integer.parseInt(splitestring[0])) {
                                         card = userArrayList.get(indx).getPlayercards().remove(i);
                                     }
                                 }

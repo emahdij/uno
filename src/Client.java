@@ -45,11 +45,12 @@ public class Client {
                 boolean sw = true;
                 boolean pick = false;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: (2 ReD) or (4) or (Pick) to puck up card from deck)");
+                    System.out.println("Pick up the card! (EX: (Red 2) or (4) or (Pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
                     try {
+                        System.out.println(splitestring);
                         if (splitestring.length == 1) {
                             if (splitestring[0].equalsIgnoreCase("Pick")) {
                                 sendAcc("pick");
@@ -58,8 +59,9 @@ public class Client {
                                 user.getPlayercards().add(card1);
                             } else {
                                 for (int i = 0; i < user.getPlayercards().size(); i++) {
-                                    if (user.getPlayercards().get(i).isSpecial() & current.isSpecial() &
-                                            user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[0])) {
+                                    System.out.println(user.getPlayercards().get(i).getSpecialValue() + " " + Integer.parseInt(splitestring[0]));
+                                    if (user.getPlayercards().get(i).isSpecial() &
+                                            user.getPlayercards().get(i).getSpecialValue() == Integer.parseInt(splitestring[0])) {
                                         card = user.getPlayercards().remove(i);
                                         break;
                                     }
