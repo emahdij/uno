@@ -9,10 +9,8 @@ public class Uno {
     private Card current;
     private Deck deck;
     private ArrayList<Card> cardpile;
-    private int penalty;
     private Scanner choice;
     private ArrayList<User> userArrayList;
-    private int pick;
     private Random random = new Random();
     private int playerNumber;
     private Scanner scanner = new Scanner(System.in);
@@ -20,7 +18,6 @@ public class Uno {
     public Uno(ArrayList<User> users) {
         deck = new Deck();
         deck.shuffle();
-        penalty = 0;
         current = getStartingCard();
         cardpile = new ArrayList<Card>();
         cardpile.add(current);

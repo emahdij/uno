@@ -117,6 +117,7 @@ public class Client {
             System.out.println("Wait for players!");
             current = getcards(true);
             if (iswin()) {
+                socket.close();
                 if (winer.equalsIgnoreCase(user.getName())) {
                     System.out.println("\u001B[32m" + "Congratulations you won!");
                 } else System.out.println("\u001B[32m" + winer + " won!");
@@ -133,8 +134,8 @@ public class Client {
             socket = new DatagramSocket(port, InetAddress.getByName("0.0.0.0"));
             socket.setBroadcast(true);
         } catch (Exception e) {
-//            e.printStackTrace();
-            System.out.println("searching in network problem");
+            e.printStackTrace();
+//            System.out.println("searching in network problem");
         }
         long now = System.currentTimeMillis();
         long end = now + time;
@@ -163,8 +164,8 @@ public class Client {
             } catch (ArrayIndexOutOfBoundsException e) {
                 continue;
             } catch (Exception e) {
-//                e.printStackTrace();
-                System.out.println("Searching in network problem");
+                e.printStackTrace();
+//                System.out.println("Searching in network problem");
             }
         }
     }
