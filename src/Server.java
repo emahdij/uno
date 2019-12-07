@@ -54,7 +54,7 @@ public class Server {
             listen();
             negotiation();
             uno = new Uno(userArrayList);
-            uno.sendcards(null,1);
+            uno.sendcards(null, 1);
             uno.play();
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,6 +111,16 @@ public class Server {
 
     public InetAddress getIp() {
         return ip;
+    }
+
+    public void destroy() {
+        try {
+            for (int i = 0; i < userArrayList.size(); i++) {
+                userArrayList.get(i).getSocket().close();
+            }
+        } catch (Exception e) {
+
+        }
     }
 
 }

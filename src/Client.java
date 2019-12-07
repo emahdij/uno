@@ -95,6 +95,12 @@ public class Client {
                         sendAcc("ok");
                         sendcard(card);
                     }
+                    if (iswin()) {
+                        System.out.println("\u001B[32m" + "Congratulations you won!");
+                        System.out.println("\u001B[0m" + "Please press key to back to menu...");
+                        scanner.nextLine();
+                        break wh;
+                    }
                 }
             }
             System.out.println("Wait for players!");
@@ -261,5 +267,16 @@ public class Client {
         }
     }
 
+    private boolean iswin() {
+        return (user.getPlayercards().size() == 0) ? true : false;
+    }
+
+    public void destroy() {
+        try {
+            socket.close();
+        } catch (Exception e) {
+
+        }
+    }
 
 }

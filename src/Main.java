@@ -44,40 +44,40 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception {
-//        while (true) {
-        clearConsole();
-        System.out.println("Select your command:");
-        System.out.println("=========================");
-        System.out.println("1: Find Server");
-        System.out.println("2: Create Server");
-        System.out.println("=========================");
-        Scanner scanner = new Scanner(System.in);
-        String in = scanner.nextLine();
-        if (in.equals("1")) {
-            Client client = new Client();
-            client.start(4778, 2000);
-
-        } else if (in.equals("2")) {
-            System.out.println();
-            Server server = new Server();
-            server.start();
+        while (true) {
+            clearConsole();
+            System.out.println("Select your command:");
+            System.out.println("=========================");
+            System.out.println("1: Find Server");
+            System.out.println("2: Create Server");
+            System.out.println("=========================");
+            Scanner scanner = new Scanner(System.in);
+            String in = scanner.nextLine();
+            if (in.equals("1")) {
+                Client client = new Client();
+                client.start(4778, 2000);
+                client.destroy();
+            } else if (in.equals("2")) {
+                System.out.println();
+                Server server = new Server();
+                server.start();
+                server.destroy();
+            }
         }
-//        }
-
     }
 
 
     public static void clearConsole() {
-        try {
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
-            final String os = System.getProperty("os.name");
-            if (os.contains("Windows"))
-                Runtime.getRuntime().exec("cls");
-            else Runtime.getRuntime().exec("clear");
-        } catch (final Exception e) {
-            System.out.println("something went wrong :(");
-        }
+//        try {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+//            final String os = System.getProperty("os.name");
+//            if (os.contains("Windows"))
+//                Runtime.getRuntime().exec("cls");
+//            else Runtime.getRuntime().exec("clear");
+//        } catch (final Exception e) {
+//            System.out.println("something went wrong :(");
+//        }
     }
 
 }
