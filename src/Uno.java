@@ -114,6 +114,25 @@ public class Uno {
                 current = getcard(playerNumber);
                 cardpile.add(current);
             }
+
+            if (isWin()) {
+                String winner = getWin();
+                sendWinner(winner);
+                for (int i = 0; i < userArrayList.size(); i++) {
+                    if (userArrayList.get(i).isAdmin())
+                        if (userArrayList.get(i).getName().equalsIgnoreCase(winner)) {
+                            System.out.println("\u001B[32m" + "Congratulations you won!");
+                            System.out.println("\u001B[0m" + "Please press key to back to menu...");
+                            scanner.nextLine();
+                            break wh;
+                        }
+                }
+                System.out.println("\u001B[32m" + winner + " won!");
+                System.out.println("\u001B[0m" + "Please press key to back to menu...");
+                scanner.nextLine();
+                break wh;
+            }
+            sendWinner(false);
             playerNumber++;
             playerNumber = playerNumber % userArrayList.size();
         }
@@ -236,4 +255,51 @@ public class Uno {
         }
         return null;
     }
+
+    private boolean isWin() {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).getPlayercards().size() == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getWin() {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).getPlayercards().size() == 0) {
+                return userArrayList.get(i).getName();
+            }
+        }
+        return "";
+    }
+
+    private void sendWinner(String name) {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).isAdmin()) continue;
+            try {
+                ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
+                objectOutputStream.writeObject(name);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+//            e.printStackTrace();
+                System.out.println("One player Left");
+            }
+        }
+    }
+
+    private void sendWinner(boolean bool) {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).isAdmin()) continue;
+            try {
+                ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
+                objectOutputStream.writeObject(bool);
+                objectOutputStream.flush();
+            } catch (IOException e) {
+//        e.printStackTrace();
+                System.out.println("One player Left");
+            }
+        }
+    }
+
 }

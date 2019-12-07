@@ -15,6 +15,7 @@ public class Client {
     private static User user;
     private String playerturn;
     private Card current;
+    private String winer;
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
 
@@ -96,7 +97,9 @@ public class Client {
                         sendcard(card);
                     }
                     if (iswin()) {
-                        System.out.println("\u001B[32m" + "Congratulations you won!");
+                        if (winer.equalsIgnoreCase(user.getName())) {
+                            System.out.println("\u001B[32m" + "Congratulations you won!");
+                        } else System.out.println("\u001B[32m" + winer + " won!");
                         System.out.println("\u001B[0m" + "Please press key to back to menu...");
                         scanner.nextLine();
                         break wh;
@@ -268,7 +271,20 @@ public class Client {
     }
 
     private boolean iswin() {
-        return (user.getPlayercards().size() == 0) ? true : false;
+        ObjectInputStream objectInput = objectInputStream;
+        Object object = null;
+        try {
+            object = objectInput.readObject();
+        } catch (Exception e) {
+            System.out.println("Network error");
+//            e.printStackTrace();
+        }
+        try {
+            return (Boolean) object;
+        } catch (Exception e) {
+            this.winer = (String) object;
+            return true;
+        }
     }
 
     public void destroy() {
