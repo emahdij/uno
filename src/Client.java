@@ -117,7 +117,6 @@ public class Client {
             System.out.println("Wait for players!");
             current = getcards(true);
             if (iswin()) {
-                socket.close();
                 if (winer.equalsIgnoreCase(user.getName())) {
                     System.out.println("\u001B[32m" + "Congratulations you won!");
                 } else System.out.println("\u001B[32m" + winer + " won!");
