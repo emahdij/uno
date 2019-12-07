@@ -52,9 +52,6 @@ public class User {
         playercards.add(c);
     }
 
-    public Card throwCard(int c) {
-        return playercards.remove(c);
-    }
 
     public void showCards() {
         System.out.println("Your cards:");

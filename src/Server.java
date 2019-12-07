@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -71,16 +68,38 @@ public class Server {
         while (reserve.getReserve() < capacity) {
             System.out.println("Server waiting...");
             Socket socket = serverSocket.accept();
+            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            boolean sw = true;
+            String clinetname = (String) objectInputStream.readObject();
+            while (sw) {
+                if (checkDuplicate(clinetname)) {
+                    objectOutputStream.writeObject(new Boolean(false));
+                    objectOutputStream.flush();
+                    clinetname = (String) objectInputStream.readObject();
+                } else {
+                    objectOutputStream.writeObject(new Boolean(true));
+                    objectOutputStream.flush();
+                    sw = !sw;
+                }
+            }
             reserve.setReserve(reserve.getReserve() + 1);
-            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String clinetname = in.readLine();
             User user = new User(socket, clinetname);
             userArrayList.add(user);
             System.out.println("User " + user.getName() + " connected!");
         }
         threads.stop();
-        System.out.println("Users connected \nThe game already started...");
+        System.out.println("Users connected \nThe game is about to start...");
     }
+
+    private boolean checkDuplicate(String name) {
+        for (int i = 0; i < userArrayList.size(); i++) {
+            if (userArrayList.get(i).getName().equalsIgnoreCase(name))
+                return true;
+        }
+        return false;
+    }
+
 
     private void negotiation() {
         client:
@@ -92,8 +111,6 @@ public class Server {
                 userArray.add(userArrayList.get(j).getName());
             }
             try {
-//                Socket socket = userArrayList.get(i).getSocket();
-//                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                 objectOutputStream.writeObject(userArray);
                 objectOutputStream.flush();

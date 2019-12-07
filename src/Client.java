@@ -178,19 +178,28 @@ public class Client {
             for (int i = 0; i < serverArrayList.size(); i++) {
                 if (serverArrayList.get(i).getServername().equalsIgnoreCase(nameserver)) {
                     socket = new Socket(serverArrayList.get(i).getIp(), 4778);
-                    OutputStream outstream = socket.getOutputStream();
-                    PrintWriter out = new PrintWriter(outstream);
-                    System.out.print("Plese enter your username:");
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                    boolean valid = false;
+                    System.out.print("Please enter your username:");
                     String username = scanner.nextLine();
+                    objectOutputStream.writeObject(username);
+                    objectOutputStream.flush();
+                    while (!valid) {
+                        if (!getAcc(objectInputStream)) {
+                            System.out.print("\u001B[31m" + "This name is already taken.Please choose another one:");
+                            username = scanner.nextLine();
+                            objectOutputStream.writeObject(username);
+                            objectOutputStream.flush();
+                        } else valid = true;
+                    }
                     user = new User(username, false);
-                    out.println(username);
-                    out.flush();
                     sw = false;
                 }
             }
             if (socket == null) {
                 System.out.println("\u001B[31m" + "Wrong server name!");
-                System.out.print("\u001B[0m" + "Plese enter server name:");
+                System.out.print("\u001B[0m" + "Please enter server name:");
                 nameserver = scanner.nextLine();
             }
         }
@@ -245,7 +254,6 @@ public class Client {
         return null;
     }
 
-
     private void sendcard(Card card) {
         try {
             ObjectOutputStream objectOutputStream = this.objectOutputStream;
@@ -280,6 +288,17 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean getAcc(ObjectInputStream objectInputStream) {
+        try {
+            ObjectInputStream objectInput = objectInputStream;
+            return (Boolean) objectInput.readObject();
+        } catch (Exception e) {
+//            System.out.println("Network error");
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private boolean iswin() {
