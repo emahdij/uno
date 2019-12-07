@@ -96,18 +96,18 @@ public class Client {
                         sendAcc("ok");
                         sendcard(card);
                     }
-                    if (iswin()) {
-                        if (winer.equalsIgnoreCase(user.getName())) {
-                            System.out.println("\u001B[32m" + "Congratulations you won!");
-                        } else System.out.println("\u001B[32m" + winer + " won!");
-                        System.out.println("\u001B[0m" + "Please press key to back to menu...");
-                        scanner.nextLine();
-                        break wh;
-                    }
                 }
             }
             System.out.println("Wait for players!");
             current = getcards(true);
+            if (iswin()) {
+                if (winer.equalsIgnoreCase(user.getName())) {
+                    System.out.println("\u001B[32m" + "Congratulations you won!");
+                } else System.out.println("\u001B[32m" + winer + " won!");
+                System.out.println("\u001B[0m" + "Please press key to back to menu...");
+                scanner.nextLine();
+                break wh;
+            }
         }
     }
 
@@ -251,12 +251,8 @@ public class Client {
         try {
             playerturn = (String) object;
         } catch (Exception e) {
-            System.out.println("card be ja string ");
-            Card newcard = (Card) object;
-            System.out.println(newcard.getColor());
-            System.out.println(newcard.getValue());
-//            e.printStackTrace();
-//            System.out.println("Getturn user error ");
+            e.printStackTrace();
+            System.out.println("Getturn user error ");
         }
     }
 
