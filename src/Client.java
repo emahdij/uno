@@ -42,15 +42,28 @@ public class Client {
             System.out.println(current.toString());
             System.out.println("=========================");
             if (playerturn.equals(user.getName())) {
+                if (current.isSpecial()) {
+                    for (int i = 0; i < current.getSpecialValue(); i++) {
+                        sendAcc("pick");
+                        Card card1 = getcards(true);
+                        user.getPlayercards().add(card1);
+                    }
+                    Main.clearConsole();
+                    printusers(playerturn);
+                    user.showCards();
+                    System.out.println("Current card:");
+                    System.out.println(current.toString());
+                    System.out.println("=========================");
+                    System.out.println("\u001B[31m" + "Your penalty is " + current.getSpecialValue() + " extra card!");
+                }
                 boolean sw = true;
                 boolean pick = false;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: (Red 2) or (4) or (Pick) to puck up card from deck)");
+                    System.out.println("\u001B[0m" + "Pick up the card! (EX: (Red 2) or (4) or (Pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
                     try {
-                        System.out.println(splitestring);
                         if (splitestring.length == 1) {
                             if (splitestring[0].equalsIgnoreCase("Pick")) {
                                 sendAcc("pick");
@@ -69,11 +82,12 @@ public class Client {
                             }
                         } else if (splitestring.length == 2) {
                             for (int i = 0; i < user.getPlayercards().size(); i++) {
-                                if (!user.getPlayercards().get(i).isSpecial() & !current.isSpecial() &
-                                        user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
+                                if (user.getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
                                         user.getPlayercards().get(i).getColor().equalsIgnoreCase(splitestring[0]) &
                                         (current.getValue() == user.getPlayercards().get(i).getValue() |
-                                                current.getColor().equalsIgnoreCase(splitestring[0]))) {
+                                                current.getColor().equalsIgnoreCase(splitestring[0]) |
+                                                current.isSpecial()
+                                        )) {
                                     card = user.getPlayercards().remove(i);
                                     break;
                                 }

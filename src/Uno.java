@@ -31,6 +31,7 @@ public class Uno {
 
     public void play() {
         playerNumber = random.nextInt(userArrayList.size());
+        boolean penallty;
         wh:
         while (true) {
             playerTurn();
@@ -41,43 +42,51 @@ public class Uno {
             System.out.println(current);
             System.out.println("=========================");
             if (userArrayList.get(playerNumber).isAdmin()) {
+                if (current.isSpecial()) {
+                    for (int i = 0; i < current.getSpecialValue(); i++) {
+                        if (deck.isEmpty())
+                            deck = new Deck(cardpile);
+                        userArrayList.get(playerNumber).pickCards(deck.getTopCard());
+                    }
+                    Main.clearConsole();
+                    printusers(playerNumber);
+                    printcards();
+                    System.out.println("Current card:");
+                    System.out.println(current);
+                    System.out.println("=========================");
+                    System.out.println("\u001B[31m" + "Your penalty is " + current.getSpecialValue() + " extra card!");
+                }
                 boolean sw = true;
                 boolean pick = false;
                 while (sw) {
-                    System.out.println("Pick up the card! (EX: (Red 2) or (4) or (pick) to puck up card from deck)");
+                    System.out.println("\u001B[0m" + "Pick up the card! (EX: (Red 2) or (4) or (pick) to puck up card from deck)");
                     String cardnumber = scanner.nextLine();
                     String[] splitestring = cardnumber.split(" ");
                     Card card = null;
                     try {
-                        int indx = 0;
-                        for (int i = 0; i < userArrayList.size(); i++) {
-                            if (userArrayList.get(i).isAdmin()) {
-                                indx = i;
-                                break;
-                            }
-                        }
                         if (splitestring.length == 1) {
                             if (splitestring[0].equalsIgnoreCase("pick")) {
                                 pick = true;
                                 if (deck.isEmpty())
                                     deck = new Deck(cardpile);
-                                userArrayList.get(indx).pickCards(deck.getTopCard());
+                                userArrayList.get(playerNumber).pickCards(deck.getTopCard());
                             } else {
-                                for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
-                                    if (userArrayList.get(indx).getPlayercards().get(i).isSpecial() &
-                                            userArrayList.get(indx).getPlayercards().get(i).getSpecialValue() == Integer.parseInt(splitestring[0])) {
-                                        card = userArrayList.get(indx).getPlayercards().remove(i);
+                                for (int i = 0; i < userArrayList.get(playerNumber).getPlayercards().size(); i++) {
+                                    if (userArrayList.get(playerNumber).getPlayercards().get(i).isSpecial() &
+                                            userArrayList.get(playerNumber).getPlayercards().get(i).getSpecialValue() == Integer.parseInt(splitestring[0])) {
+                                        card = userArrayList.get(playerNumber).getPlayercards().remove(i);
                                     }
                                 }
                             }
                         } else if (splitestring.length == 2) {
-                            for (int i = 0; i < userArrayList.get(indx).getPlayercards().size(); i++) {
-                                if (!userArrayList.get(indx).getPlayercards().get(i).isSpecial() & !current.isSpecial() &
-                                        userArrayList.get(indx).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
-                                        userArrayList.get(indx).getPlayercards().get(i).getColor().equalsIgnoreCase(splitestring[0]) &
+                            for (int i = 0; i < userArrayList.get(playerNumber).getPlayercards().size(); i++) {
+                                if (userArrayList.get(playerNumber).getPlayercards().get(i).getValue() == Integer.parseInt(splitestring[1]) &
+                                        userArrayList.get(playerNumber).getPlayercards().get(i).getColor().equalsIgnoreCase(splitestring[0]) &
                                         (current.getValue() == Integer.parseInt(splitestring[1]) |
-                                                current.getColor().equalsIgnoreCase(splitestring[0]))) {
-                                    card = userArrayList.get(indx).getPlayercards().remove(i);
+                                                current.getColor().equalsIgnoreCase(splitestring[0]) |
+                                                current.isSpecial()
+                                        )) {
+                                    card = userArrayList.get(playerNumber).getPlayercards().remove(i);
                                 }
                             }
                         }
