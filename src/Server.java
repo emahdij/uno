@@ -84,8 +84,8 @@ public class Server {
                 }
             }
             reserve.setReserve(reserve.getReserve() + 1);
-            User user = new User(socket, clinetname);
-            System.out.println("user " + user.getName() + " " + socket.getPort());
+            User user = new User(objectInputStream, objectOutputStream, clinetname);
+//            System.out.println("user " + user.getName() + " " + socket.getPort());
             userArrayList.add(user);
             System.out.println("User " + user.getName() + " connected!");
         }
@@ -113,7 +113,7 @@ public class Server {
                 ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                 objectOutputStream.writeObject(userArray);
                 objectOutputStream.flush();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -131,7 +131,8 @@ public class Server {
     public void destroy() {
         try {
             for (int i = 0; i < userArrayList.size(); i++) {
-                userArrayList.get(i).getSocket().close();
+                userArrayList.get(i).getObjectOutputStream().close();
+                userArrayList.get(i).getObjectInputStream().close();
             }
         } catch (Exception e) {
 

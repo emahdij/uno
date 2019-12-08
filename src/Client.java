@@ -24,8 +24,8 @@ public class Client {
         search(port, time);
         connect();
         try {
-            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
+//            this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//            this.objectInputStream = new ObjectInputStream(socket.getInputStream());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,10 +128,10 @@ public class Client {
     }
 
     private void search(int port, int time) {
-        DatagramSocket socket = null;
+        DatagramSocket datagramSocket = null;
         try {
-            socket = new DatagramSocket(port, InetAddress.getByName("0.0.0.0"));
-            socket.setBroadcast(true);
+            datagramSocket = new DatagramSocket(port, InetAddress.getByName("0.0.0.0"));
+            datagramSocket.setBroadcast(true);
         } catch (Exception e) {
             e.printStackTrace();
 //            System.out.println("searching in network problem");
@@ -143,7 +143,7 @@ public class Client {
             try {
                 byte[] recvBuf = new byte[1500];
                 DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
-                socket.receive(packet);
+                datagramSocket.receive(packet);
                 String tmp = new String(packet.getData()).trim();
                 String[] message = tmp.split(" ");
                 if (message.length == 6 && !message[1].equals("BROADCAST"))
@@ -167,7 +167,7 @@ public class Client {
 //                System.out.println("Searching in network problem");
             }
         }
-        socket.close();
+        datagramSocket.close();
     }
 
     private void connect() throws Exception {
@@ -179,8 +179,8 @@ public class Client {
             for (int i = 0; i < serverArrayList.size(); i++) {
                 if (serverArrayList.get(i).getServername().equalsIgnoreCase(nameserver)) {
                     socket = new Socket(serverArrayList.get(i).getIp(), 4778);
-                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                    ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                    this.objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                    this.objectInputStream = new ObjectInputStream(socket.getInputStream());
                     boolean valid = false;
                     System.out.print("Please enter your username:");
                     String username = scanner.nextLine();
@@ -277,7 +277,7 @@ public class Client {
             playerturn = (String) object;
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Getturn user error ");
+//            System.out.println("Getturn user error ");
         }
     }
 

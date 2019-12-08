@@ -206,7 +206,7 @@ public class Uno {
                     ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                     objectOutputStream.writeObject(cardArrayList);
                     objectOutputStream.flush();
-                } catch (IOException e) {
+                } catch (Exception e) {
 //                    e.printStackTrace();
                     System.out.println("Network Error");
                 }

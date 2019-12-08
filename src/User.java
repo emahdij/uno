@@ -5,19 +5,17 @@ import java.util.ArrayList;
 
 public class User {
     private String name;
-    private Socket socket;
-    private boolean admin=false;
+    private boolean admin = false;
     private ArrayList<Card> playercards = new ArrayList<Card>();
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;
 
 
-    public User(Socket socket, String name) {
-        this.socket = socket;
+    public User(ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream, String name) {
         this.name = name;
         try {
-            objectInputStream = new ObjectInputStream(socket.getInputStream());
-            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            this.objectInputStream = objectInputStream;
+            this.objectOutputStream = objectOutputStream;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -32,9 +30,6 @@ public class User {
         return name;
     }
 
-    public Socket getSocket() {
-        return socket;
-    }
 
     public boolean isAdmin() {
         return admin;
