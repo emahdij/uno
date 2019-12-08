@@ -167,6 +167,7 @@ public class Client {
 //                System.out.println("Searching in network problem");
             }
         }
+        socket.close();
     }
 
     private void connect() throws Exception {

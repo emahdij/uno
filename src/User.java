@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class User {
     private String name;
     private Socket socket;
-    private boolean admin;
+    private boolean admin=false;
     private ArrayList<Card> playercards = new ArrayList<Card>();
     private static ObjectOutputStream objectOutputStream;
     private static ObjectInputStream objectInputStream;

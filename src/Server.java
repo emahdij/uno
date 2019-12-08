@@ -85,6 +85,7 @@ public class Server {
             }
             reserve.setReserve(reserve.getReserve() + 1);
             User user = new User(socket, clinetname);
+            System.out.println("user " + user.getName() + " " + socket.getPort());
             userArrayList.add(user);
             System.out.println("User " + user.getName() + " connected!");
         }
@@ -102,14 +103,12 @@ public class Server {
 
 
     private void negotiation() {
-        client:
+        ArrayList<String> userArray = new ArrayList<String>();
+        for (int j = 0; j < userArrayList.size(); j++) {
+            userArray.add(userArrayList.get(j).getName());
+        }
         for (int i = 0; i < userArrayList.size(); i++) {
-            ArrayList<String> userArray = new ArrayList<String>();
-            array:
-            for (int j = 0; j < userArrayList.size(); j++) {
-                if (userArrayList.get(i).isAdmin()) continue client;
-                userArray.add(userArrayList.get(j).getName());
-            }
+            if (userArrayList.get(i).isAdmin()) continue;
             try {
                 ObjectOutputStream objectOutputStream = userArrayList.get(i).getObjectOutputStream();
                 objectOutputStream.writeObject(userArray);
